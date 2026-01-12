@@ -18,7 +18,7 @@
  *
  */
 function getCurrentFunctionName() {
-  throw new Error('Not implemented');
+  return getCurrentFunctionName.name;
 }
 
 /**
@@ -50,8 +50,8 @@ function getFunctionBody(/* func */) {
  *  ]) => [0, 1, 2]
  *
  */
-function getArgumentsCount(/* funcs */) {
-  throw new Error('Not implemented');
+function getArgumentsCount(funcs) {
+  return funcs.map((it) => it.length);
 }
 
 /**
@@ -70,8 +70,10 @@ function getArgumentsCount(/* funcs */) {
  *   power05(16) => 4
  *
  */
-function getPowerFunction(/* exponent */) {
-  throw new Error('Not implemented');
+function getPowerFunction(exponent) {
+  return (x) => {
+    return x ** exponent;
+  };
 }
 
 /**
@@ -87,11 +89,25 @@ function getPowerFunction(/* exponent */) {
  *   getPolynom(8)     => y = 8
  *   getPolynom()      => null
  */
-function getPolynom(/* ...coefficients */) {
-  throw new Error('Not implemented');
+function getPolynom(...coefficients) {
+  if (coefficients.length === 0) return () => null;
+
+  return (x) => {
+    let i = 0;
+
+    return coefficients.reduceRight((acc, it) => {
+      if (i === 0) {
+        i += 1;
+        return acc;
+      }
+
+      const result = x ** i * it;
+
+      i += 1;
+      return acc + result;
+    }, coefficients.at(-1));
+  };
 }
-
-
 
 /**
  * Memoizes passed function and returns function
@@ -107,8 +123,19 @@ function getPolynom(/* ...coefficients */) {
  *   ...
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
-function memoize(/* func */) {
-  throw new Error('Not implemented');
+function memoize(func) {
+  let memory;
+
+  return (...args) => {
+    if (!memory) {
+      const result = func(...args);
+      memory = result;
+
+      return result;
+    }
+
+    return memory;
+  };
 }
 
 /**
@@ -126,8 +153,22 @@ function memoize(/* func */) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, attempts) {
+  return () => {
+    let currentAttempt = 0;
+    let errorR;
+
+    while (currentAttempt < attempts) {
+      try {
+        return func();
+      } catch (error) {
+        errorR = error;
+        currentAttempt += 1;
+      }
+    }
+
+    return errorR;
+  };
 }
 
 /**
